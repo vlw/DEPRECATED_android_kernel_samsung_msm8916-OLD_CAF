@@ -29,6 +29,12 @@
 #include <linux/of_platform.h>
 #include <linux/of_gpio.h>
 #include <linux/spinlock.h>
+#if defined(CONFIG_QPNP_RESIN)
+#include <linux/qpnp/power-on.h>
+#endif
+#if defined(CONFIG_SEC_DEBUG)
+#include <linux/sec_debug.h>
+#endif
 #include <linux/pinctrl/consumer.h>
 
 struct gpio_button_data {

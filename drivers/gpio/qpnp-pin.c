@@ -92,10 +92,16 @@
 #define Q_REG_SRC_SEL_MASK		0xE
 #define Q_REG_MODE_SEL_SHIFT		4
 #define Q_REG_MODE_SEL_MASK		0x70
+#define Q_REG_INVERT_SHIFT		Q_REG_OUT_INVERT_SHIFT
+#define Q_REG_INVERT_MASK		Q_REG_OUT_INVERT_MASK
+#define Q_REG_MODE_SHIFT		Q_REG_MODE_SEL_SHIFT
+#define Q_REG_MODE_MASK			Q_REG_MODE_SEL_MASK
 
 /* control reg: dig_vin */
 #define Q_REG_VIN_SHIFT			0
 #define Q_REG_VIN_MASK			0x7
+#define Q_REG_VIN_SEL_SHIFT		Q_REG_VIN_SHIFT
+#define Q_REG_VIN_SEL_MASK		Q_REG_VIN_MASK
 
 /* control reg: dig_pull */
 #define Q_REG_PULL_SHIFT		0
@@ -106,6 +112,8 @@
 #define Q_REG_OUT_STRENGTH_MASK		0x3
 #define Q_REG_OUT_TYPE_SHIFT		4
 #define Q_REG_OUT_TYPE_MASK		0x30
+#define Q_REG_OUTPUT_TYPE_SHIFT		Q_REG_OUT_TYPE_SHIFT
+#define Q_REG_OUTPUT_TYPE_MASK		Q_REG_OUT_TYPE_MASK
 
 /* control reg: en */
 #define Q_REG_MASTER_EN_SHIFT		7

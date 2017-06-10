@@ -223,6 +223,7 @@ static void __iomem *virt_bases[N_BASES];
 #define CAMSS_AHB_CMD_RCGR				0x5A000
 #define BIMC_GFX_CBCR					0x31024
 #define BIMC_GPU_CBCR					0x31040
+#define SNOC_QOSGEN					0x2601C
 
 #define APCS_SH_PLL_MODE				0x00000
 #define APCS_SH_PLL_L_VAL				0x00004
@@ -238,6 +239,7 @@ static void __iomem *virt_bases[N_BASES];
 #define gpll0_source_val		1
 #define gpll0_aux_source_val		3
 #define gpll1_source_val		1
+#define gpll1_aux_source_val    2
 #define gpll2_source_val		2
 #define dsi0_phypll_mm_source_val	1
 
@@ -451,6 +453,7 @@ static struct pll_vote_clk gpll1_clk_src = {
 	},
 };
 
+DEFINE_EXT_CLK(gpll1_aux_clk_src, &gpll1_clk_src.c);
 static struct pll_vote_clk gpll2_clk_src = {
 	.en_reg = (void __iomem *)APCS_GPLL_ENA_VOTE,
 	.en_mask = BIT(2),

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2014 TRUSTONIC LIMITED
+ * Copyright (c) 2013-2016 TRUSTONIC LIMITED
  * All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
@@ -520,6 +520,7 @@ static phys_addr_t get_mci_base_phys(unsigned int len)
 		ctx.mci_base.order = order;
 		ctx.mci_base.addr =
 			(void *)__get_free_pages(GFP_USER | __GFP_ZERO, order);
+		ctx.mci_base.len = (1 << order) * PAGE_SIZE;
 		if (ctx.mci_base.addr == NULL) {
 			MCDRV_DBG_WARN(mcd, "get_free_pages failed");
 			memset(&ctx.mci_base, 0, sizeof(ctx.mci_base));
@@ -738,6 +739,9 @@ found:
 
 		if (!ctx.mci_base.addr)
 			return -EFAULT;
+
+		if (len != ctx.mci_base.len)
+			return -EINVAL;
 
 		vmarea->vm_flags |= VM_IO;
 		/* Convert kernel address to user address. Kernel address begins
@@ -1394,11 +1398,7 @@ out:
  * This device is installed and registered as cdev, then interrupt and
  * queue handling is set up
  */
-#if defined(MC_CRYPTO_CLOCK_MANAGEMENT) && defined(MC_USE_DEVICE_TREE)
-static int mobicore_init(void)
-#else
 static int __init mobicore_init(void)
-#endif
 {
 	int ret = 0;
 	dev_set_name(mcd, "mcd");
@@ -1493,11 +1493,7 @@ error:
 /*
  * This function removes this device driver from the Linux device manager .
  */
-#if defined(MC_CRYPTO_CLOCK_MANAGEMENT) && defined(MC_USE_DEVICE_TREE)
 static void mobicore_exit(void)
-#else
-static void __exit mobicore_exit(void)
-#endif
 {
 	MCDRV_DBG_VERBOSE(mcd, "enter");
 #ifdef MC_MEM_TRACES
@@ -1577,12 +1573,12 @@ static struct platform_driver mc_plat_driver = {
 	},
 };
 
-static int __init mobicore_register(void)
+static int mobicore_register(void)
 {
 	return platform_driver_register(&mc_plat_driver);
 }
 
-static void __exit mobicore_unregister(void)
+static void mobicore_unregister(void)
 {
 	platform_driver_unregister(&mc_plat_driver);
 	mobicore_exit();

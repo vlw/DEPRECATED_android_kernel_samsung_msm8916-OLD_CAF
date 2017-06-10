@@ -36,6 +36,10 @@
 # include <linux/efi.h>
 #endif
 
+#ifdef CONFIG_KNOX_KAP
+#include <linux/knox_kap.h>
+#endif
+
 #define DEVPORT_MINOR	4
 
 static inline unsigned long size_inside_page(unsigned long start,

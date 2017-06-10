@@ -601,7 +601,7 @@ config HID_SAITEK
 
 config HID_SAMSUNG
 	tristate "Samsung InfraRed remote control or keyboards"
-	depends on HID
+	depends on (USB_HID || HID)
 	---help---
 	Support for Samsung InfraRed remote control or keyboards.
 
