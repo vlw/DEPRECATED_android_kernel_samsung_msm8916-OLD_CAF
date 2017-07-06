@@ -33,6 +33,7 @@
 #define DMA_TPG_FIFO_LEN 64
 
 struct mdss_dsi_ctrl_pdata *ctrl_list[DSI_CTRL_MAX];
+static struct mdss_dsi_ctrl_pdata *ctrl_backup;
 
 struct mdss_hw mdss_dsi0_hw = {
 	.hw_ndx = MDSS_HW_DSI0,
@@ -74,6 +75,12 @@ static struct mdss_dsi_event dsi_event;
 
 static int dsi_event_thread(void *data);
 
+#if defined(CONFIG_FB_MSM_MDSS_SAMSUNG)
+struct mdss_dsi_ctrl_pdata **mdss_dsi_get_ctrl(void)
+{
+	return ctrl_list;
+}
+#endif
 void mdss_dsi_ctrl_init(struct device *ctrl_dev,
 			struct mdss_dsi_ctrl_pdata *ctrl)
 {
@@ -1996,6 +2003,7 @@ void mdss_dsi_cmd_mdp_start(struct mdss_dsi_ctrl_pdata *ctrl)
 	spin_lock_irqsave(&ctrl->mdp_lock, flag);
 	mdss_dsi_enable_irq(ctrl, DSI_MDP_TERM);
 	ctrl->mdp_busy = true;
+	ctrl_backup = ctrl;
 	INIT_COMPLETION(ctrl->mdp_comp);
 	MDSS_XLOG(ctrl->ndx, ctrl->mdp_busy, current->pid);
 	spin_unlock_irqrestore(&ctrl->mdp_lock, flag);
@@ -2612,3 +2620,28 @@ irqreturn_t mdss_dsi_isr(int irq, void *ptr)
 
 	return IRQ_HANDLED;
 }
+
+#if defined(CONFIG_FB_MSM_MDSS_SAMSUNG)
+void mdss_dsi_check_te(void)
+{
+	u8 rc, te_count = 0;
+	u8 te_max = 250;
+
+	if(!ctrl_backup->disp_te_gpio)
+		return;
+
+	pr_info(" ============ start waiting for TE ============\n");
+	for (te_count = 0 ; te_count < te_max ; te_count++)
+	{
+		rc = gpio_get_value(ctrl_backup->disp_te_gpio);
+		if(rc != 0)
+		{
+			pr_info("%s: gpio_get_value(ctrl_pdata->disp_te_gpio) = %d, te_count = %d\n",
+				__func__, rc, te_count);
+			break;
+		}
+		udelay(80);
+	}
+	pr_info(" ============ finish waiting for TE ============\n");
+}
+#endif

@@ -320,7 +320,9 @@ static void mdss_mdp_bus_scale_unregister(struct mdss_data_type *mdata)
 		mdata->reg_bus_hdl = 0;
 	}
 }
-
+#if defined(CONFIG_FB_MSM_MDSS_SAMSUNG)
+u64 bus_ab_quota_dbg, bus_ib_quota_dbg;
+#endif
 static int mdss_mdp_bus_scale_set_quota(u64 ab_quota_rt, u64 ab_quota_nrt,
 		u64 ib_quota_rt, u64 ib_quota_nrt)
 {
@@ -389,7 +391,10 @@ static int mdss_mdp_bus_scale_set_quota(u64 ab_quota_rt, u64 ab_quota_nrt,
 			vect = &bw_table->usecase[new_uc_idx].vectors[i];
 			vect->ab = ab_quota[i];
 			vect->ib = ib_quota[i];
-
+#if defined(CONFIG_FB_MSM_MDSS_SAMSUNG)
+			bus_ab_quota_dbg = vect->ab;
+			bus_ib_quota_dbg = vect->ib;
+#endif
 			pr_debug("uc_idx=%d %s path idx=%d ab=%llu ib=%llu\n",
 				new_uc_idx, (i < rt_axi_port_cnt) ? "rt" : "nrt"
 				, i, vect->ab, vect->ib);
@@ -1683,6 +1688,10 @@ int mdss_mdp_parse_dt_hw_settings(struct platform_device *pdev)
 			hws, vbif_nrt_len);
 	mdss_mdp_parse_dt_regs_array(mdp_arr, &mdata->mdss_io,
 		hws + vbif_len, mdp_len);
+
+#if defined(CONFIG_FB_MSM_MDSS_SAMSUNG)
+	mdata->mdss_io.base = mdata->mdss_base;
+#endif
 
 	mdata->hw_settings = hws;
 
@@ -3146,6 +3155,14 @@ static void mdss_mdp_footswitch_ctrl(struct mdss_data_type *mdata, int on)
 		mdata->fs_ena = false;
 	}
 }
+
+#if defined(CONFIG_FB_MSM_MDSS_SAMSUNG)
+void mdss_mdp_underrun_clk_info(void)
+{
+	pr_info(" mdp_clk = %ld, bus_ab = %llu, bus_ib = %llu\n",
+		mdss_mdp_get_clk_rate(MDSS_CLK_MDP_SRC), bus_ab_quota_dbg, bus_ib_quota_dbg);
+}
+#endif
 
 int mdss_mdp_secure_display_ctrl(unsigned int enable)
 {
