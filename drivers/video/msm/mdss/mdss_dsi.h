@@ -103,9 +103,6 @@ enum dsi_panel_status_mode {
 	ESD_REG,
 	ESD_REG_NT35596,
 	ESD_TE,
-#ifdef CONFIG_MACH_CP8675
-	ESD_REG_YL,
-#endif
 #if defined(CONFIG_FB_MSM_MDSS_SAMSUNG)
 	ESD_REG_IRQ,
 #endif
@@ -162,9 +159,9 @@ enum dsi_pm_type {
 #define DSI_CMD_DST_FORMAT_RGB666	7
 #define DSI_CMD_DST_FORMAT_RGB888	8
 
-#define DSI_INTR_DESJEW_MASK			BIT(31)
-#define DSI_INTR_DYNAMIC_REFRESH_MASK		BIT(29)
-#define DSI_INTR_DYNAMIC_REFRESH_DONE		BIT(28)
+#define DSI_INTR_DESJEW_MASK		BIT(31)
+#define DSI_INTR_DYNAMIC_REFRESH_MASK	BIT(29)
+#define DSI_INTR_DYNAMIC_REFRESH_DONE	BIT(28)
 #define DSI_INTR_ERROR_MASK		BIT(25)
 #define DSI_INTR_ERROR			BIT(24)
 #define DSI_INTR_BTA_DONE_MASK          BIT(21)
@@ -254,7 +251,6 @@ struct dsi_clk_desc {
 	u32 pre_div_func;
 };
 
-
 struct dsi_panel_cmds {
 	char *buf;
 	int blen;
@@ -266,19 +262,6 @@ struct dsi_panel_cmds {
 	char *read_startoffset;
 #endif
 };
-
-#ifdef CONFIG_MACH_CP8675
-struct status_reg {
-	u8 reg;
-	u8 num_vals;
-	u8 *vals;
-};
-
-struct dsi_panel_status_regs {
-	size_t num_regs;
-	struct status_reg *regs;
-};
-#endif
 
 struct dsi_kickoff_action {
 	struct list_head act_entry;
@@ -406,9 +389,9 @@ struct mdss_dsi_ctrl_pdata {
 	u8 ctrl_state;
 	int panel_mode;
 	int irq_cnt;
-	int disp_te_gpio;
 	int rst_gpio;
 	int disp_en_gpio;
+	int disp_te_gpio;
 	int bklt_en_gpio;
 	int mode_gpio;
 	int bklt_ctrl;	/* backlight ctrl */
@@ -445,9 +428,6 @@ struct mdss_dsi_ctrl_pdata {
 	struct dsi_panel_cmds post_panel_on_cmds;
 	struct dsi_panel_cmds off_cmds;
 	struct dsi_panel_cmds status_cmds;
-#ifdef CONFIG_MACH_CP8675
-	struct dsi_panel_status_regs status_regs;
-#endif
 	u32 status_cmds_rlen;
 	struct mdss_dsi_panel_cmd_list cmd_list;
 	u32 status_value;
@@ -492,8 +472,6 @@ struct mdss_dsi_ctrl_pdata {
 	int horizontal_idle_cnt;
 	struct panel_horizontal_idle *line_idle;
 	struct mdss_util_intf *mdss_util;
-
-	bool dfps_status;	/* dynamic refresh status */
 };
 
 struct dsi_status_data {
@@ -506,10 +484,10 @@ int dsi_panel_device_register(struct device_node *pan_node,
 				struct mdss_dsi_ctrl_pdata *ctrl_pdata);
 
 int mdss_dsi_cmds_tx(struct mdss_dsi_ctrl_pdata *ctrl,
-		struct dsi_cmd_desc *cmds, int cnt, int use_dma_tpg);
+		struct dsi_cmd_desc *cmds, int cnt);
 
 int mdss_dsi_cmds_rx(struct mdss_dsi_ctrl_pdata *ctrl,
-			struct dsi_cmd_desc *cmds, int rlen, int use_dma_tpg);
+			struct dsi_cmd_desc *cmds, int rlen);
 
 void mdss_dsi_host_init(struct mdss_panel_data *pdata);
 void mdss_dsi_op_mode_config(int mode,

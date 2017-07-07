@@ -17,6 +17,7 @@
 #include <linux/platform_device.h>
 #include <linux/stringify.h>
 #include <linux/types.h>
+
 #include <linux/debugfs.h>
 
 #include <linux/lcd.h>
@@ -317,9 +318,6 @@ struct mipi_panel_info {
 
 	u32  power_off_delay;
 	u32  additional_delay;
-#ifdef CONFIG_MACH_YULONG
-	char has_tps65132;
-#endif
 };
 
 struct edp_panel_info {
@@ -379,8 +377,6 @@ struct mdss_mdp_pp_tear_check {
 	u32 refx100;
 };
 
-struct mdss_livedisplay_ctx;
-
 struct mdss_panel_info {
 	u32 xres;
 	u32 yres;
@@ -431,7 +427,6 @@ struct mdss_panel_info {
 	u32 min_height;
 	u32 min_fps;
 	u32 max_fps;
-	u32 idle_fps;
 
 	u32 cont_splash_enabled;
 	bool esd_rdy;
@@ -465,7 +460,6 @@ struct mdss_panel_info {
 #if defined(CONFIG_FB_MSM_MDSS_SAMSUNG)
 	int panel_state;
 #endif
-	struct mdss_livedisplay_ctx *livedisplay;
 };
 
 struct mipi_samsung_driver_data {
@@ -520,7 +514,6 @@ struct mdss_panel_debugfs_info {
 	u32 xres;
 	u32 yres;
 	struct lcd_panel_info lcdc;
-	struct dentry *parent;
 	u32 override_flag;
 	char frame_rate;
 	struct mdss_panel_debugfs_info *next;
